@@ -75,7 +75,7 @@ ybira-net/
 
 ### Clone and Build
 ```bash
-git clone https://github.com/<seu-usuario>/ybira-net.git
+git clone https://github.com/GuilhermeMartins10/ybira-net.git
 cd ybira-net
 go mod download
 sudo go run ./cmd/daemon
