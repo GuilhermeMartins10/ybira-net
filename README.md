@@ -34,18 +34,25 @@ Inspired by the Tupi-Guarani word *Ybirá* (“tree”), it connects system root
 ```
 ybira-net/
  ├─ cmd/
- │   ├─ daemon/          → main service (collector + API)
- │   └─ cli/             → admin CLI
+ │   └─ daemon/
+ │        └─ main.go
  ├─ internal/
- │   ├─ capture/         → packet capture (PCAP)
- │   ├─ mapper/          → PID/socket mapping
- │   ├─ aggregator/      → counters & time-window logic
- │   ├─ api/             → REST + WebSocket server
- │   ├─ store/           → SQLite persistence
- │   ├─ logging/         → structured logs
- │   └─ config/          → YAML/ENV loader
- ├─ web/                 → simple HTML dashboard (Chart.js)
- └─ go.mod
+ │   ├─ capture/
+ │   │    ├─ capture.go           # interface genérica
+ │   │    ├─ capture_linux.go     # implementação Linux
+ │   │    └─ capture_windows.go   # implementação Windows
+ │   ├─ mapper/
+ │   │    ├─ mapper.go
+ │   │    ├─ mapper_linux.go
+ │   │    └─ mapper_windows.go
+ │   ├─ aggregator/
+ │   ├─ api/
+ │   ├─ store/
+ │   ├─ logging/
+ │   └─ config/
+ ├─ web/
+ ├─ go.mod
+ └─ README.md
 ```
 
 ---
