@@ -38,9 +38,9 @@ ybira-net/
  │        └─ main.go
  ├─ internal/
  │   ├─ capture/
- │   │    ├─ capture.go           # interface genérica
- │   │    ├─ capture_linux.go     # implementação Linux
- │   │    └─ capture_windows.go   # implementação Windows
+ │   │    ├─ capture.go          
+ │   │    ├─ capture_linux.go    
+ │   │    └─ capture_windows.go  
  │   ├─ mapper/
  │   │    ├─ mapper.go
  │   │    ├─ mapper_linux.go
@@ -186,5 +186,3 @@ Follow the [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_C
 MIT © 2026 Ybirá Net Project
 
 ---
-
-### 🌿 “Rooted in Brazilian wisdom, built for the world.”
