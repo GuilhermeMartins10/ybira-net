@@ -1,0 +1,14 @@
+capture:
+  interface: "\\Device\\NPF_{xxxxxxxxxxx}"
+
+api:
+  listen: ":8080"
+
+log_level: "info"
+
+store:
+  flush_interval: 10
+  database_path: "./ybira.db"
+
+mapper:
+  cache_refresh_interval: 2

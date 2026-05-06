@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ybirá Net - Network Monitor</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #00d4aa;
+            margin-bottom: 5px;
+        }
+        #status {
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        #status.connected {
+            background: #0a3d2a;
+            color: #00d4aa;
+        }
+        #status.disconnected {
+            background: #3d0a0a;
+            color: #ff6b6b;
+        }
+        #status.connecting {
+            background: #3d3d0a;
+            color: #ffd93d;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px 16px;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            color: #00d4aa;
+            border-bottom: 2px solid #00d4aa;
+        }
+        td.bytes {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        #no-data {
+            color: #888;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ybirá Net</h1>
+    <div id="status" class="connecting">Connecting...</div>
+    <table>
+        <thead>
+            <tr>
+                <th>PID</th>
+                <th>PROCESS</th>
+                <th>BYTES</th>
+            </tr>
+        </thead>
+        <tbody id="stats-body">
+            <tr><td colspan="3" id="no-data">Waiting for data...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        (function() {
+            var statusEl = document.getElementById('status');
+            var tbody = document.getElementById('stats-body');
+            var ws = null;
+            var reconnectDelay = 1000;
+
+            function setStatus(text, cls) {
+                statusEl.textContent = text;
+                statusEl.className = cls;
+            }
+
+            function formatBytes(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
+                return (bytes / 1073741824).toFixed(1) + ' GB';
+            }
+
+            function renderStats(stats) {
+                if (!stats || stats.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" id="no-data">No active connections</td></tr>';
+                    return;
+                }
+                var html = '';
+                for (var i = 0; i < stats.length; i++) {
+                    var s = stats[i];
+                    html += '<tr><td>' + s.pid + '</td><td>' + s.process + '</td><td class="bytes">' + formatBytes(s.bytes) + '</td></tr>';
+                }
+                tbody.innerHTML = html;
+            }
+
+            function connect() {
+                var proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+                var url = proto + '//' + location.host + '/ws';
+                setStatus('Connecting...', 'connecting');
+
+                ws = new WebSocket(url);
+
+                ws.onopen = function() {
+                    setStatus('Connected', 'connected');
+                    reconnectDelay = 1000;
+                };
+
+                ws.onmessage = function(event) {
+                    try {
+                        var data = JSON.parse(event.data);
+                        renderStats(data.stats);
+                    } catch (e) {
+                        // ignore malformed messages
+                    }
+                };
+
+                ws.onclose = function() {
+                    setStatus('Disconnected', 'disconnected');
+                    setTimeout(connect, reconnectDelay);
+                    reconnectDelay = Math.min(reconnectDelay * 2, 10000);
+                };
+
+                ws.onerror = function() {
+                    ws.close();
+                };
+            }
+
+            connect();
+        })();
+    </script>
+</body>
+</html>
